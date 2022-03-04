@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+import json
 
 #### VAR ####
 tools = [
@@ -30,25 +31,41 @@ Set Logging Level\n\
 Example:\n\
   python3 port2cmd.py d (for debug purpose)")
 
-def printTable(table):    
-    print("| PROCESS".ljust(14) + "| PID".ljust(14) + "| PROTO".ljust(14) + "| IFACE".ljust(14) + "| PORT".ljust(14) + "| CMDLINE")
-    for record in table:
-        for value in record.split(";")[:-1]:
-            print("| " + value[:12].ljust(12),end="")
-        print("| " + record.split(";")[-1],end="")
+def printTable(record):    
+    print("| PROCESS".ljust(20) + "| PID".ljust(20) + "| PROTO".ljust(20) + "| IFACE".ljust(20) + "| PORT".ljust(20) + "| CMDLINE")
+    for _record in record:
+        for value in _record.split(";")[:5]:
+            print("| " + value[:18].ljust(18),end="")
+        print("| " + _record.split(";SEP;")[1][:70],end="")
         print("")
+
+def exportJSON(record):
+    retJSON = [] 
+    for _record in record:
+        retJSON.append({
+            'process': _record.split(";")[0],
+            'PID': _record.split(";")[1],
+            'PROTO': _record.split(";")[2],
+            'IFACE': _record.split(";")[3],
+            'PORT': _record.split(";")[4],
+            'CMDLINE': _record.split(";SEP;")[1]
+        })  
+    
+    with open('output.json', 'w') as fout:
+        json.dump(retJSON, fout)
 
 def cmdLine(pid):
     return os.popen('cat /proc/'+pid+'/cmdline').read()
 
 def lsofParser():
-    cmd = "lsof -i |awk 'NR > 1 {print $1\";\"$2\";\"$8\";\"$9}'"
+    cmd = "lsof -i -n -P |awk 'NR > 1 {print $1\";\"$2\";\"$8\";\"$9}'"
     output = os.popen(cmd).readlines()
-    table = []
+    record = []
     for line in output:
         pid = line.split(";")[1]
-        table.append(line.replace(":",";").strip()+";"+cmdLine(pid).replace("\x00"," "))
-    printTable(table)
+        record.append(line.replace("[::1]","127.0.0.1").replace(":",";").strip()+";SEP;"+cmdLine(pid).replace("\x00"," "))
+    printTable(record)
+    exportJSON(record)
 
 
 ### SETTING LOGGING LEVEL ###
