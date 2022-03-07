@@ -1,9 +1,6 @@
 ## OpenPort2CmdLine Linux Utility
 
-### Set Logging Level
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
+### Parameters:
 ```markdown
   d: DEBUG
   i: INFOTION
@@ -11,10 +8,12 @@ Markdown is a lightweight and easy-to-use syntax for styling your writing. It in
   e: ERROR
   c: CRITICAL
 ```
+
 ### Example
 ```
   python3 port2cmd.py d (for debug purpose)
 ```
+
 ### Output (with | jq)
 ```
 [
