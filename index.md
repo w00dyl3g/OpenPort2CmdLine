@@ -10,11 +10,13 @@ Markdown is a lightweight and easy-to-use syntax for styling your writing. It in
   w: WARNING
   e: ERROR
   c: CRITICAL
-
+```
 ### Example
+```
   python3 port2cmd.py d (for debug purpose)
-
+```
 ### Output (with | jq)
+```
 [
     {
         "process": "nc", 
